@@ -31,8 +31,6 @@ And here is a lovely picture of our downtown San Francisco environment from abov
 #### 2. Set your current local position
 I retreived the drone's current position in geodetic coordinates from `self.global_position`, and the global home position set from last step from `self.global_home`, then used the utility function `global_to_local()` to convert the current global position to local position.
 
-Meanwhile, here's a picture of me flying through the trees!
-![Forest Flying](./misc/in_the_trees.png)
 
 #### 3. Set grid start position from local position
 Instead of setting it to center code is changed to start from the current local position.

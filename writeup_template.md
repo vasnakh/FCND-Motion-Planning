@@ -1,23 +1,6 @@
 ## Project: 3D Motion Planning
 ![Quad Image](./misc/enroute.png)
 
----
-
-
-# Required Steps for a Passing Submission:
-1. Load the 2.5D map in the colliders.csv file describing the environment.
-2. Discretize the environment into a grid or graph representation.
-3. Define the start and goal locations.
-4. Perform a search using A* or other search algorithm.
-5. Use a collinearity test or ray tracing method (like Bresenham) to remove unnecessary waypoints.
-6. Return waypoints in local ECEF coordinates (format for `self.all_waypoints` is [N, E, altitude, heading], where the drone’s start location corresponds to [0, 0, 0, 0].
-7. Write it up.
-8. Congratulations!  Your Done!
-
-## [Rubric](https://review.udacity.com/#!/rubrics/1534/view) Points
-### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
-
----
 ### Writeup / README
 
 #### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  
@@ -27,7 +10,14 @@ You're reading it! Below I describe how I addressed each rubric point and where 
 ### Explain the Starter Code
 
 #### 1. Explain the functionality of what's provided in `motion_planning.py` and `planning_utils.py`
-These scripts contain a basic planning implementation that includes...
+The intial code was different from backyard flyer with more functionalities defined in `planning_utils.py` and after the quad's armed, the quad takes off and switchs to the PLANNING state, and the planner performs path planning in the function plan_path() with following steps:
+These scripts contain a basic planning implementation that includes the following:
+1. Load the 2.5D map in the colliders.csv file describing the environment.
+2. Discretize the environment into a grid representation.
+3. Define the start and goal locations.
+4. Perform a search using A* search algorithm.
+5. Use a collinearity test to prune the path.
+6. Converts the planned path into waypoints, and send the waypoints to simulator.
 
 And here's a lovely image of my results (ok this image has nothing to do with it, but it's a nice example of how to include images in your writeup!)
 ![Top Down View](./misc/high_up.png)
@@ -42,30 +32,29 @@ Here's | A | Snappy | Table
 ### Implementing Your Path Planning Algorithm
 
 #### 1. Set your global home position
-Here students should read the first line of the csv file, extract lat0 and lon0 as floating point values and use the self.set_home_position() method to set global home. Explain briefly how you accomplished this in your code.
+Here I have read the first line and splitted the contents of the line to extract lat0 and lon0 and casted it to floating point values and used the `self.set_home_position()` method to set global home.
 
 
 And here is a lovely picture of our downtown San Francisco environment from above!
 ![Map of SF](./misc/map.png)
 
 #### 2. Set your current local position
-Here as long as you successfully determine your local position relative to global home you'll be all set. Explain briefly how you accomplished this in your code.
-
+I retreived the drone's current position in geodetic coordinates from `self.global_position`, and the global home position set from last step from `self.global_home`, then used the utility function `global_to_local()` to convert the current global position to local position.
 
 Meanwhile, here's a picture of me flying through the trees!
 ![Forest Flying](./misc/in_the_trees.png)
 
 #### 3. Set grid start position from local position
-This is another step in adding flexibility to the start location. As long as it works you're good to go!
+Instead of setting it to center code is changed to start from the current local position.
 
 #### 4. Set grid goal position from geodetic coords
-This step is to add flexibility to the desired goal location. Should be able to choose any (lat, lon) within the map and have it rendered to a goal location on the grid.
+Changed the code be able to choose any (lat, lon) within the map and have it rendered to a goal location on the grid.
 
 #### 5. Modify A* to include diagonal motion (or replace A* altogether)
-Minimal requirement here is to modify the code in planning_utils() to update the A* implementation to include diagonal motions on the grid that have a cost of sqrt(2), but more creative solutions are welcome. Explain the code you used to accomplish this step.
+I updated the A* implementation to include diagnoal motions on the grid with a cost of sqrt(2). Code is implemented in [lines 58 to 61](planning_utils.py#L58-L61), [89 to 96](planning_utils.py#L89-L96) of `planning_utils.py`.
 
 #### 6. Cull waypoints 
-For this step you can use a collinearity test or ray tracing method like Bresenham. The idea is simply to prune your path of unnecessary waypoints. Explain the code you used to accomplish this step.
+Used colinearity test to prune the path. Code is implemented in [lines 166 to 193](planning_utils.py#L166-L193).
 
 
 
@@ -73,7 +62,6 @@ For this step you can use a collinearity test or ray tracing method like Bresenh
 #### 1. Does it work?
 It works!
 
-### Double check that you've met specifications for each of the [rubric](https://review.udacity.com/#!/rubrics/1534/view) points.
   
 # Extra Challenges: Real World Planning
 
